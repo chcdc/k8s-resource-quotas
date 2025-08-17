@@ -37,27 +37,35 @@ func main() {
 	}
 }
 
-func run(cmd *cobra.Command, args []string) error {
+func setupKubernetesClient(configPath string) (*kubernetes.Clientset, error) {
 	var kubeConfig string
-	if config != "" {
-		kubeConfig = config
+	if configPath  != "" {
+		kubeConfig = configPath
 	} else if home := homedir.HomeDir(); home != "" {
 		kubeConfig = filepath.Join(home, ".kube", "config")
 	}
 
 	clientConfig, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("Error on load Kubeconfig file: %w", err)
 	}
 
 	client, err := kubernetes.NewForConfig(clientConfig)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("Error on create Kubernets Client: %w", err)
 	}
 
+	return client, nil
+}
 
+func run(cmd *cobra.Command, args []string) error {
 	nsList := strings.Split(ns, ",")
 	var emptyNs []string
+
+	client, err := setupKubernetesClient(config)
+	if err != nil {
+		return err
+	}
 
 	for _, namespace := range nsList {
 		namespace = strings.TrimSpace(namespace)

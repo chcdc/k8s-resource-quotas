@@ -34,4 +34,34 @@ jobs:
       run: |
         sha256sum kubectl-resource-quota-*.tar.gz kubectl-resource-quota-*.zip > checksums.txt
         cat checksums.txt
-        
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          kubectl-resource-quota-*.tar.gz
+          kubectl-resource-quota-*.zip
+          checksums.txt
+        body: |
+          ## kubectl-resource-quota ${{ steps.version.outputs.VERSION }}
+          
+          ### Installation          
+          #### Manual Installation
+          1. Download the appropriate binary for your platform
+          2. Extract and move to your PATH
+          3. Make executable: `chmod +x kubectl-resource-quota`
+          
+          ### Usage
+          ```bash
+          kubectl resource-quota --namespace <namespace>
+          ```
+          
+          ### Changes
+          - Initial release
+          - Support for viewing resource quotas with usage percentages
+          - Multi-platform support (Linux, macOS, Windows)
+          - Improved formatting over existing solutions
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

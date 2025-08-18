@@ -2,7 +2,7 @@ BINARY_NAME=kubectl-resource-quota
 VERSION=v0.1.0
 LDFLAGS=-ldflags "-X main.version=${VERSION}"
 
-.PHONY: build clean install test
+.PHONY: build clean install test lint deps fmt staticcheck check
 
 build:
 	go build -v ${LDFLAGS} -o ${BINARY_NAME} .
@@ -32,5 +32,10 @@ deps:
 fmt:
 	go fmt ./...
 
-run:
-	go run . --namespace default
+staticcheck:
+	@which staticcheck > /dev/null || (echo "Installing staticcheck..." && go install honnef.co/go/tools/cmd/staticcheck@latest)
+	staticcheck ./...
+
+check: fmt staticcheck
+	go vet ./...
+	go test -v ./...

@@ -47,12 +47,12 @@ func setupKubernetesClient(configPath string) (*kubernetes.Clientset, error) {
 
 	clientConfig, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
 	if err != nil {
-		return nil, fmt.Errorf("Error on load Kubeconfig file: %w", err)
+		return nil, fmt.Errorf("error on load Kubeconfig file: %w", err)
 	}
 
 	client, err := kubernetes.NewForConfig(clientConfig)
 	if err != nil {
-		return nil, fmt.Errorf("Error on create Kubernets Client: %w", err)
+		return nil, fmt.Errorf("error on create Kubernets Client: %w", err)
 	}
 
 	return client, nil

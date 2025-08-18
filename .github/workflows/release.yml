@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Get version
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+    
+    - name: Build binaries
+      run: |
+        make build-all
+        
+        # Create archives for each platform
+        tar -czf kubectl-resource-quota-linux-amd64.tar.gz kubectl-resource-quota-linux-amd64
+        tar -czf kubectl-resource-quota-darwin-amd64.tar.gz kubectl-resource-quota-darwin-amd64
+        tar -czf kubectl-resource-quota-darwin-arm64.tar.gz kubectl-resource-quota-darwin-arm64
+        zip kubectl-resource-quota-windows-amd64.zip kubectl-resource-quota-windows-amd64.exe
+    
+    - name: Generate checksums
+      run: |
+        sha256sum kubectl-resource-quota-*.tar.gz kubectl-resource-quota-*.zip > checksums.txt
+        cat checksums.txt
+        

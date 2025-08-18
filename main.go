@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"strings"
 	"context"
-	"log"
-	"path/filepath"
-	"strconv"
+	"fmt"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"log"
+	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -27,7 +27,6 @@ func main() {
 		RunE:  run,
 	}
 
-
 	rootCmd.Flags().StringVarP(&ns, "namespaces", "n", "", "Namespace(s) to check quotas for. Use comma-separated for multiple: ns1,ns2,ns3 (required)")
 	rootCmd.Flags().StringVar(&config, "kubeconfig", "", "Path to kubeconfig file")
 	rootCmd.MarkFlagRequired("namespaces")
@@ -39,7 +38,7 @@ func main() {
 
 func setupKubernetesClient(configPath string) (*kubernetes.Clientset, error) {
 	var kubeConfig string
-	if configPath  != "" {
+	if configPath != "" {
 		kubeConfig = configPath
 	} else if home := homedir.HomeDir(); home != "" {
 		kubeConfig = filepath.Join(home, ".kube", "config")
@@ -110,7 +109,6 @@ func run(cmd *cobra.Command, args []string) error {
 						percentage = (usedVal / hardVal) * 100
 					}
 				}
-
 
 				if strings.HasSuffix(usedStr, "Ki") || strings.HasSuffix(usedStr, "Mi") || strings.HasSuffix(usedStr, "Gi") {
 				} else {
